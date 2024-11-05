@@ -12,4 +12,7 @@ FROM nginx:1.27.2-alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+COPY --from=builder /app/entrypoint.sh /app/entrypoint.sh
 COPY --from=builder /app/dist/spectra-frontend/browser /usr/share/nginx/html
+
+ENTRYPOINT ["/app/entrypoint.sh"]
