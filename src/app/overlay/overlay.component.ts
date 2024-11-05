@@ -25,7 +25,6 @@ export class OverlayComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    const siteUrl = window.location.hostname;
     this.socketService = new SocketService(
       this.config.serverEndpoint,
       this.groupCode,
