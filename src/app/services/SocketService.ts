@@ -6,18 +6,24 @@ export class SocketService {
   socketEndpoint = "https://localhost:5200";
   groupCode = "UNKNOWN";
   subscribers: Function[] = [];
+  delay: number = 0;
 
   private static instance: SocketService;
 
-  public static getInstance(socketEndpoint: string, groupCode: string): SocketService {
+  public static getInstance(
+    socketEndpoint: string,
+    groupCode: string,
+    delay: number = 0,
+  ): SocketService {
     if (SocketService.instance == null)
-      SocketService.instance = new SocketService(socketEndpoint, groupCode);
+      SocketService.instance = new SocketService(socketEndpoint, groupCode, delay);
     return SocketService.instance;
   }
 
-  constructor(socketEndpoint: string, groupCode: string) {
+  constructor(socketEndpoint: string, groupCode: string, delay: number = 0) {
     this.groupCode = groupCode;
     this.socketEndpoint = socketEndpoint;
+    this.delay = delay;
 
     this.socket = io.connect(this.socketEndpoint, {
       autoConnect: true,
@@ -30,7 +36,11 @@ export class SocketService {
 
     //registering main data handler
     this.socket.on("match_data", (data: string) => {
-      this.subscribers.forEach((e) => e(JSON.parse(data)));
+      if (delay <= 0) {
+        this.subscribers.forEach((handler) => handler(data));
+      } else {
+        setTimeout(() => this.subscribers.forEach((handler) => handler(data)), this.delay);
+      }
     });
 
     //setting up reconnection attempt handler

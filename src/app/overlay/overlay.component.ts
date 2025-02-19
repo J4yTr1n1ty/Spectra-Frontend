@@ -13,6 +13,7 @@ export class OverlayComponent implements OnInit, AfterViewInit {
   @ViewChild(TrackerComponent) trackerComponent!: TrackerComponent;
   groupCode = "UNKNOWN";
   socketService!: SocketService;
+  delay = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -20,12 +21,17 @@ export class OverlayComponent implements OnInit, AfterViewInit {
   ) {
     this.route.queryParams.subscribe((params) => {
       this.groupCode = params["groupCode"]?.toUpperCase() || "UNKNOWN";
+      this.delay = params["delay"] || 0;
       console.log(`Requested group code is ${this.groupCode}`);
     });
   }
 
   ngOnInit(): void {
-    this.socketService = SocketService.getInstance(this.config.serverEndpoint, this.groupCode);
+    this.socketService = SocketService.getInstance(
+      this.config.serverEndpoint,
+      this.groupCode,
+      this.delay,
+    );
   }
 
   ngAfterViewInit(): void {
