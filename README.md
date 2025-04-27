@@ -1,31 +1,52 @@
-# ValoSpectra - Frontend
+# ValoSpectra - Frontend Overlay
 
-Spectra is your all-in-one solution for an amazing looking Valorant Tournament Overlay, enabling all Organizers to display information like held gun, available credits etc. with just a single spectator running software.
-To learn more and see a live demo, visit [valospectra.com](https://www.valospectra.com/).
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![Angular](https://img.shields.io/badge/Angular-18.2-red)
+![Docker](https://img.shields.io/badge/Docker-Ready-blue)
 
-It is comprised of three parts:
+ValoSpectra is a comprehensive Valorant Tournament Overlay solution that enables tournament organizers to display game information like weapons, abilities, credits, and more with just a single spectator running the client software.
 
-- [The Spectra Client](https://github.com/ValoSpectra/Spectra-Client)
-  - Running this software on a single in-game observer provides the Spectra Server with all data currently provided by Overwolf.
-- [The Spectra Server](https://github.com/ValoSpectra/Spectra-Server)
-  - Ingests data from the Observer Client to reproduce the games state, allowing us to have an accurate representation of the game for further use.
-- [The Spectra Frontend](https://github.com/ValoSpectra/Spectra-Frontend)
-  - Receives the game state from the Server every 100 milliseconds, presenting it in a beautiful manner for viewers to enjoy.
+![ValoSpectra Demo](docs/spectra-demo.png)
 
-Further updates for new features, as well as a detailed setup guide and an easy to host docker container are in the pipeline!
+## Overview
 
-# Docker Compose tutorial
+ValoSpectra creates a professional esports viewing experience by providing real-time game state visualization. The system consists of three main components:
 
-First, create a seperate folder in your working directory and create a folder `config` inside it:
+### The Ecosystem
 
-```
+- **[Spectra Client](https://github.com/ValoSpectra/Spectra-Client)**  
+  Running on a single in-game observer computer, this software captures and forwards game data from Overwolf.
+
+- **[Spectra Server](https://github.com/ValoSpectra/Spectra-Server)**  
+  Ingests data from the client to reconstruct an accurate game state representation.
+
+- **[Spectra Frontend](https://github.com/ValoSpectra/Spectra-Frontend)** (This Repository)  
+  The overlay interface that receives game state updates every 100 milliseconds and presents them in a visually appealing format.
+
+## Features
+
+- Player loadouts and economy
+- Real-time health and shield displays
+- Ability usage tracking
+- Spike plant and defuse timers
+- Team scores and match statistics
+- Support for tournament branding and sponsorship displays
+- Customizable team colors and logos
+
+## Deployment Options
+
+### Using Docker Compose (Recommended)
+
+1. Create a directory for your deployment and a config folder inside it:
+
+```bash
 mkdir -p spectra-frontend/config
 cd spectra-frontend
 ```
 
-Create a file named `docker-compose.yml` as follow:
+2. Create a `docker-compose.yml` file:
 
-```
+```yaml
 ---
 services:
   valo-spectra-frontend:
@@ -36,11 +57,9 @@ services:
       - ./config:/usr/share/nginx/html/assets/config/
 ```
 
-You can change `3000` to a different port which you want the frontend accessible outside the container to.
+3. In the `config` folder, create a file named `config.json`:
 
-Inside `config` folder, create a file named `config.json` with the following content:
-
-```
+```json
 {
   "serverEndpoint": "http://localhost:5200",
   "redirectUrl": "https://valospectra.com",
@@ -55,12 +74,72 @@ Inside `config` folder, create a file named `config.json` with the following con
 }
 ```
 
-For the most up to date version of the available configuration values, check out the `config.ts` file in the `src/app/shared/config.ts` file.
+4. Update the `serverEndpoint` to point to your Spectra Server instance.
 
-Replace `https://localhost:5200` with your Spectra Server address and outcoming port (default is 5200).
+5. Start the frontend:
 
-After that you can start the frontend by running `docker compose up -d` and the frontend are accessible at port `3000` by default.
+```bash
+docker compose up -d
+```
 
-# DISCLAIMER
+The overlay will be accessible at `http://localhost:3000` by default.
+
+### Development Setup
+
+If you want to run the project for development:
+
+1. Clone the repository
+2. Install dependencies:
+
+   ```bash
+   corepack enable
+   yarn install
+   ```
+
+3. Start the development server:
+
+   ```bash
+   yarn start
+   ```
+
+## Configuration
+
+The `config.json` file supports the following options:
+
+| Option                        | Description                                     |
+| ----------------------------- | ----------------------------------------------- |
+| `serverEndpoint`              | URL of your Spectra Server                      |
+| `redirectUrl`                 | Redirect destination for the root path          |
+| `sponsorImageUrls`            | Array of image paths for sponsor rotation       |
+| `sponsorImageRotateSpeed`     | Sponsor image rotation interval in milliseconds |
+| `attackerColorPrimary`        | Primary color for attacking team                |
+| `attackerColorSecondary`      | Secondary color for attacking team              |
+| `attackerColorShieldCurrency` | Shield and currency color for attacking team    |
+| `defenderColorPrimary`        | Primary color for defending team                |
+| `defenderColorSecondary`      | Secondary color for defending team              |
+| `defenderColorShieldCurrency` | Shield and currency color for defending team    |
+
+For the most up-to-date configuration options, check `src/app/shared/config.ts`.
+
+## Usage
+
+The overlay provides multiple modes accessible via different endpoints:
+
+- `/overlay` - Standard overlay
+- `/overlay/minimal` - Minimal overlay with less information
+- `/agent-select` - Agent selection screen
+- `/autoswitch` - Automatic switch between agent select and game overlay
+
+You will have to append a `?groupCode=YOURCODE` parameter to connect to a specific match group.
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+
+## Disclaimer
 
 Spectra-Client isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.
